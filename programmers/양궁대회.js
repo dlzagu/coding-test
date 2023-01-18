@@ -1,5 +1,6 @@
 function solution(n, info) {
   let max = Number.MIN_SAFE_INTEGER;
+  let lion = new Array(11).fill(0);
   let answer = [];
 
   const isSmallScoreArr = (cnts) => {
@@ -9,48 +10,40 @@ function solution(n, info) {
     }
   };
 
-  const dfs = (lionThrowed, index, lionCnts) => {
-    const appeachThrowed = info[index]; // 해당 인덱스의 어피치 화살 갯수
-    const appeachOverCnt = appeachThrowed + 1; // 어피치보다 많이 던진 수
-    const numberOfThrows = n - lionThrowed; // 던질 수 있는 횟수
-
-    if (index === 10 && lionThrowed < n) {
-      lionCnts[index] = n - lionThrowed;
-      lionThrowed = n;
-    }
-
-    if (n === lionThrowed) {
-      let apeachScore = 0;
-      let lionScore = 0;
-
-      lionCnts.forEach((cnt, i) => {
+  const dfs = (level, count) => {
+    if (level === 10) {
+      lion[level] = count;
+      let lionPoint = 0;
+      let apeachPoint = 0;
+      lion.forEach((cnt, i) => {
+        if (!cnt && !info[i]) return;
         const score = 10 - i;
-
-        if (cnt === 0 && info[i] === 0) return;
-
-        if (info[i] >= cnt) apeachScore += score;
-        else if (info[i] - cnt < 0) lionScore += score;
+        if (info[i] >= cnt) apeachPoint += score;
+        else lionPoint += score;
       });
-      const diff = lionScore - apeachScore;
+      const diff = lionPoint - apeachPoint;
+
       if (max < diff) {
         max = diff;
-        answer = lionCnts;
+        answer = [...lion];
       } else if (max === diff) {
-        if (isSmallScoreArr(lionCnts)) answer = lionCnts;
+        if (isSmallScoreArr(lion)) answer = [...lion];
       }
-      return;
-    }
+    } else {
+      if (count === 0 || info[level] + 1 > count) {
+        dfs(level + 1, count);
+      } else {
+        lion[level] = info[level] + 1;
+        count -= info[level] + 1;
+        dfs(level + 1, count);
 
-    if (numberOfThrows >= appeachOverCnt) {
-      lionCnts[index] = appeachOverCnt;
-      dfs(lionThrowed + appeachOverCnt, index + 1, [...lionCnts]);
-      lionCnts[index] = 0;
+        lion[level] = 0;
+        count += info[level] + 1;
+        dfs(level + 1, count);
+      }
     }
-    dfs(lionThrowed, index + 1, [...lionCnts]);
   };
-
-  dfs(0, 0, new Array(11).fill(0));
-
+  dfs(0, n);
   if (max <= 0) return [-1];
   return answer;
 }
