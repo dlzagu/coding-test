@@ -6,15 +6,15 @@ function solution(orders, course) {
     dfs(order, map, 0);
   }
   for (let i = 0; i < course.length; i++) {
-    const list = [];
+    const courseList = [];
     for (let key in map) {
       const stringLen = key.split("").length;
-      if (course[i] === stringLen) list.push([key, map[key]]);
+      if (course[i] === stringLen) courseList.push([key, map[key]]);
     }
-    if (!list.length) continue;
-    list.sort((a, b) => b[1] - a[1]);
-    const max = list[0][1];
-    list
+    if (!courseList.length) continue;
+    courseList.sort((a, b) => b[1] - a[1]);
+    const max = courseList[0][1];
+    courseList
       .filter(([_, cnt]) => cnt === max)
       .map(([string, orderCnt]) => {
         if (orderCnt > 1) answer.push(string);
@@ -26,8 +26,7 @@ function solution(orders, course) {
 
 const dfs = (arr, map, start) => {
   const key = arr.sort().join("");
-  if (map[key]) map[key] += 1;
-  else map[key] = 1;
+  map[key] ? (map[key] += 1) : (map[key] = 1);
   for (let i = start; i < arr.length; i++) {
     const copy = [...arr];
     copy[i] = "";
