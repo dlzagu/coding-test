@@ -1,26 +1,25 @@
 function solution(x, y, n) {
-  const dist = Array(1000001).fill(0);
-  const bfs = (x, y, n) => {
-    const q = [];
-    dist[x] = 1;
-    q.push(x);
-    while (q.length) {
-      x = q.shift();
-      if (0 <= x + n <= 1000000 && dist[x + n] === 0) {
-        dist[x + n] = dist[x] + 1;
-        q.push(x + n);
-      }
-      if (0 <= x * 2 <= 1000000 && dist[x * 2] === 0) {
-        dist[x * 2] = dist[x] + 1;
-        q.push(x * 2);
-      }
+  let count = 0;
+  let test = [x];
 
-      if (0 <= x * 3 <= 1000000 && dist[x * 3] === 0) {
-        dist[x * 3] = dist[x] + 1;
-        q.push(x * 3);
-      }
+  if (x === y) return 0;
+
+  while (true) {
+    count++;
+
+    const set = new Set();
+    test.forEach((item) => {
+      if (item + n <= y) set.add(item + n);
+      if (item * 2 <= y) set.add(item * 2);
+      if (item * 3 <= y) set.add(item * 3);
+    });
+
+    if (set.size === 0) return -1;
+
+    if (set.has(y)) {
+      return count;
     }
-  };
-  bfs(x, y, n);
-  return dist[y] - 1;
+
+    test = set;
+  }
 }
